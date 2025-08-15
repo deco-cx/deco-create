@@ -6,7 +6,8 @@
     "dev": "deco dev --clean-build-dir ./view-build",
     "deploy": "wrangler build && deco deploy ./dist",
     "gen": "deco gen --output=deco.gen.ts",
-    "gen:self": "deco gen --self=$DECO_SELF_URL --output=deco.gen.ts"
+    "gen:self": "deco gen --self=$DECO_SELF_URL --output=deco.gen.ts",
+    "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
     "@deco/workers-runtime": "npm:@jsr/deco__workers-runtime@0.11.0",
