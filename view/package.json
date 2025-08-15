@@ -9,7 +9,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@deco/workers-runtime": "npm:@jsr/deco__workers-runtime@0.11.0",
+    "@deco/workers-runtime": "npm:@jsr/deco__workers-runtime@0.11.1",
     "@radix-ui/react-slot": "^1.2.3",
     "@tailwindcss/vite": "^4.0.6",
     "@tanstack/react-query": "^5.66.5",
