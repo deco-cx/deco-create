@@ -12,7 +12,8 @@
     "configure": "cd server && deco configure",
     "gen": "cd server && deco gen --output=deco.gen.ts",
     "gen:self": "cd server && deco gen --self=$DECO_SELF_URL --output=deco.gen.ts",
-    "deploy": "cd view && npm run build && cd ../server && npm run deploy"
+    "deploy": "cd view && npm run build && cd ../server && npm run deploy",
+    "db:generate": "cd server && npm run db:generate"
   },
   "devDependencies": {
     "concurrently": "^9.2.0",
