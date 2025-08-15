@@ -1,4 +1,4 @@
-# React + Tailwind MCP Server Template
+# Deco MCP app
 
 A full-stack template for building
 [Model Context Protocol (MCP)](https://spec.modelcontextprotocol.io/) servers
