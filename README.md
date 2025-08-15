@@ -72,8 +72,8 @@ to your MCP server:
 
 ```typescript
 // Typed calls to your server tools and workflows
-const result = await client.tools.MY_TOOL({ input: "data" });
-const workflowResult = await client.workflows.MY_WORKFLOW({ input: "data" });
+const result = await client.MY_TOOL({ input: "data" });
+const workflowResult = await client.MY_WORKFLOW({ input: "data" });
 ```
 
 ## 📖 Learn More
