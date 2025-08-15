@@ -338,6 +338,16 @@ function NavigationExamples() {
 4. Use `clsx` and `tailwind-merge` for conditional classes
 5. Use lucide-react icons for consistent iconography (already installed)
 
+### When Working with Database:
+1. **Always use `getDb(env)`** - Never create direct database connections
+2. **Schema changes**: Modify `server/schema.ts` then run `npm run db:generate`
+3. **Migrations**: Applied automatically when using `getDb(env)` - no manual commands needed
+4. **CRUD operations**: Follow the patterns in `server/tools.ts` (check existence before update/delete)
+5. **Boolean handling**: Convert SQLite integers (0/1) to/from JavaScript booleans
+6. **Error handling**: Wrap database operations in try-catch blocks
+7. **Transactions**: Use `db.transaction()` for multi-step operations
+8. **Types**: Leverage Drizzle's `InferSelectModel` and `InferInsertModel` for type safety
+
 ## Environment Setup
 
 ### Prerequisites:
@@ -364,6 +374,268 @@ function NavigationExamples() {
 - `npm run deploy` deploys to Cloudflare Workers
 - App becomes available at public URL
 - Can be used as MCP server by AI agents
+
+## Database Management
+
+This template includes **Drizzle ORM** with **SQLite** (Cloudflare Durable Objects) for persistent data storage.
+
+### Database Architecture
+
+**Key Files:**
+- `server/schema.ts` - Database schema definitions using Drizzle ORM
+- `server/db.ts` - Database connection and migration utilities
+- `server/drizzle.config.ts` - Drizzle configuration for migrations
+- `server/drizzle/` - Generated migration files
+
+### Database Connection Pattern
+
+**🔥 CRITICAL: Always use `getDb(env)` function**
+
+```typescript
+import { getDb } from "./db.ts";
+import { eq } from "drizzle-orm";
+import { myTable } from "./schema.ts";
+
+// ✅ CORRECT: Always use getDb(env) in tools
+export const createMyDatabaseTool = (env: Env) =>
+  createTool({
+    id: "MY_DATABASE_TOOL",
+    description: "Interact with database",
+    inputSchema: z.object({ /* input schema */ }),
+    outputSchema: z.object({ /* output schema */ }),
+    execute: async ({ context }) => {
+      // ALWAYS get database connection this way
+      const db = await getDb(env);
+      
+      // Perform database operations
+      const result = await db.select().from(myTable);
+      return { result };
+    },
+  });
+```
+
+**❌ NEVER do direct database connections:**
+```typescript
+// DON'T DO THIS - Never create direct connections
+const db = drizzle(env);  // ❌ Missing migrations
+const db = new Database(); // ❌ Wrong approach
+```
+
+### Database Schema Definition
+
+Define your schema in `server/schema.ts`:
+
+```typescript
+// server/schema.ts
+import { integer, sqliteTable, text } from "@deco/workers-runtime/drizzle";
+
+export const todosTable = sqliteTable("todos", {
+  id: integer("id").primaryKey(),
+  title: text("title"),
+  completed: integer("completed").default(0),
+});
+
+export const usersTable = sqliteTable("users", {
+  id: integer("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  name: text("name"),
+  createdAt: integer("created_at", { mode: 'timestamp' }),
+});
+```
+
+### Database Operations Patterns
+
+**1. Create (Insert):**
+```typescript
+execute: async ({ context }) => {
+  const db = await getDb(env);
+  
+  const newRecord = await db.insert(myTable).values({
+    title: context.title,
+    completed: 0,
+  }).returning({ id: myTable.id });
+  
+  return { id: newRecord[0].id };
+}
+```
+
+**2. Read (Select):**
+```typescript
+execute: async ({ context }) => {
+  const db = await getDb(env);
+  
+  // Select all
+  const allRecords = await db.select().from(myTable);
+  
+  // Select with conditions
+  const filteredRecords = await db.select()
+    .from(myTable)
+    .where(eq(myTable.completed, 1));
+  
+  // Select single record
+  const singleRecord = await db.select()
+    .from(myTable)
+    .where(eq(myTable.id, context.id))
+    .limit(1);
+  
+  return { records: allRecords };
+}
+```
+
+**3. Update:**
+```typescript
+execute: async ({ context }) => {
+  const db = await getDb(env);
+  
+  // Check if record exists first
+  const existing = await db.select()
+    .from(myTable)
+    .where(eq(myTable.id, context.id))
+    .limit(1);
+  
+  if (existing.length === 0) {
+    throw new Error("Record not found");
+  }
+  
+  const updated = await db.update(myTable)
+    .set({ title: context.newTitle })
+    .where(eq(myTable.id, context.id))
+    .returning();
+  
+  return { updated: updated[0] };
+}
+```
+
+**4. Delete:**
+```typescript
+execute: async ({ context }) => {
+  const db = await getDb(env);
+  
+  // Verify record exists before deletion
+  const existing = await db.select()
+    .from(myTable)
+    .where(eq(myTable.id, context.id))
+    .limit(1);
+  
+  if (existing.length === 0) {
+    throw new Error("Record not found");
+  }
+  
+  await db.delete(myTable).where(eq(myTable.id, context.id));
+  
+  return { success: true, deletedId: context.id };
+}
+```
+
+### Migration Workflow
+
+**1. Schema Changes:**
+```bash
+# After modifying server/schema.ts
+npm run db:generate  # Generates migration files
+```
+
+**2. Migration Application:**
+- Migrations are **automatically applied** when using `getDb(env)`
+- No manual migration commands needed in production
+- Migrations run lazily on first database access
+
+**3. Migration Files:**
+- Generated in `server/drizzle/` directory
+- Version controlled and deployed with your app
+- Applied automatically via `migrateWithoutTransaction`
+
+### Database Best Practices
+
+**1. Always Use getDb():**
+```typescript
+// ✅ CORRECT - Every database operation
+const db = await getDb(env);
+```
+
+**2. Handle Errors Gracefully:**
+```typescript
+execute: async ({ context }) => {
+  const db = await getDb(env);
+  
+  try {
+    const result = await db.select().from(myTable);
+    return { result };
+  } catch (error) {
+    console.error("Database error:", error);
+    throw new Error("Failed to fetch data");
+  }
+}
+```
+
+**3. Validate Before Operations:**
+```typescript
+// Always check if records exist before update/delete
+const existing = await db.select()
+  .from(myTable)
+  .where(eq(myTable.id, context.id))
+  .limit(1);
+
+if (existing.length === 0) {
+  throw new Error("Record not found");
+}
+```
+
+### Database Schema Types
+
+Drizzle automatically generates TypeScript types from your schema:
+
+```typescript
+import type { InferSelectModel, InferInsertModel } from "drizzle-orm";
+import { todosTable } from "./schema.ts";
+
+// Generated types
+type Todo = InferSelectModel<typeof todosTable>;
+type NewTodo = InferInsertModel<typeof todosTable>;
+
+// Use in tool schemas
+outputSchema: z.object({
+  todo: z.object({
+    id: z.number(),
+    title: z.string().nullable(),
+    completed: z.boolean(),
+  }),
+})
+```
+
+### Common Database Queries
+
+**Filtering and Sorting:**
+```typescript
+import { eq, ne, gt, lt, and, or, desc, asc } from "drizzle-orm";
+
+// Multiple conditions
+const results = await db.select()
+  .from(todosTable)
+  .where(and(
+    eq(todosTable.completed, 0),
+    ne(todosTable.title, null)
+  ))
+  .orderBy(desc(todosTable.id));
+
+// OR conditions
+const results = await db.select()
+  .from(todosTable)
+  .where(or(
+    eq(todosTable.completed, 1),
+    gt(todosTable.id, 100)
+  ));
+```
+
+**Joins (if using multiple tables):**
+```typescript
+const results = await db.select({
+  todo: todosTable,
+  user: usersTable,
+})
+.from(todosTable)
+.leftJoin(usersTable, eq(todosTable.userId, usersTable.id));
+```
 
 ## Common Patterns
 
