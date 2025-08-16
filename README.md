@@ -1,11 +1,16 @@
-# Deco MCP app
+# Deco MCP template app
 
 A full-stack template for building
 [Model Context Protocol (MCP)](https://spec.modelcontextprotocol.io/) servers
-with a modern React frontend. This template provides a complete development
-environment where your MCP server not only exposes tools and workflows to AI
-agents but also serves a beautiful web interface built with React and Tailwind
-CSS.
+with a modern React frontend.
+
+This template provides a complete development environment where your MCP server
+not only exposes tools and workflows to AI agents but also serves a beautiful
+web interface built with React and Tailwind CSS.
+
+## 📝 Development History
+
+This repository uses [Specstory](https://specstory.com/) to track the history of prompts that were used to code this repo. You can inspect the complete development history in the [`.specstory/`](.specstory/) folder.
 
 ## ✨ Features
 

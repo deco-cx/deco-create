@@ -7,7 +7,6 @@ import {
   RouterProvider,
 } from "@tanstack/react-router";
 import HomePage from "./routes/home.tsx";
-import ProfilePage from "./routes/profile.tsx";
 import { Toaster } from "sonner";
 
 import "./styles.css";
@@ -19,7 +18,6 @@ const rootRoute = createRootRoute({
 
 const routeTree = rootRoute.addChildren([
   HomePage(rootRoute),
-  ProfilePage(rootRoute),
 ]);
 
 const queryClient = new QueryClient();

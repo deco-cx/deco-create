@@ -1,15 +1,16 @@
 #:schema node_modules/@deco/workers-runtime/config-schema.json
-name = "deco-create"
+name = "deco-create1"
 main = "main.ts"
 compatibility_date = "2025-06-17"
 compatibility_flags = [ "nodejs_compat" ]
+scope = "testing-workers"
 
 [assets]
 directory = "./view-build"
 binding = "ASSETS"
 
 [deco]
-workspace = "kmute"
+workspace = "testing-workers"
 bindings = []
 enable_workflows = true
 local = false

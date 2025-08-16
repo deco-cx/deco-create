@@ -5,6 +5,7 @@
 
 # Build files
 view-build/
+.wrangler/
 
 # Node modules
 node_modules
