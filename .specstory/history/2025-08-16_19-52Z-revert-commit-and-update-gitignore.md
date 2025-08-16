@@ -197,11 +197,93 @@ Now let's stage the `.gitignore` changes and commit everything without the `.wra
 
 ---
 
+```bash
+git add .gitignore
+```
 
+```
+~/deco/deco-create lucis/login-button* ❯ git add .gitignore                                         16:54:11
+
+~/deco/deco-create lucis/login-button* ❯
+```
 
 ---
 
+<think><details><summary>Thought Process</summary>Now let's commit all the changes with the same commit message, but without the .wrangler files.</details></think>
 
+---
+
+```bash
+git commit -m "Login with deco button"
+```
+
+```
+~/deco/deco-create lucis/login-button* ❯ git commit -m "Login with deco button"
+[lucis/login-button 54d57b5] Login with deco button
+ 23 files changed, 18226 insertions(+), 162 deletions(-)
+ create mode 100644 .cursorindexingignore
+ create mode 100644 .specstory/.gitignore
+ create mode 100644 .specstory/history/2025-08-16_18-27Z-add-specstory-usage-note-to-readme.md
+ create mode 100644 package-lock.json
+ create mode 100644 plans/deco-button.md
+ create mode 100644 server/.cursor/mcp.json
+ create mode 100644 server/.cursor/rules/deco-chat.mdc
+ create mode 100644 server/.deco/preferences.json
+ create mode 100644 view/public/d.png
+ create mode 100644 view/src/components/deco-button.tsx
+ create mode 100644 view/src/components/ui/collapsible.tsx
+ create mode 100644 view/src/components/ui/popover.tsx
+ create mode 100644 view/src/hooks/useToolCalls.ts
+ create mode 100644 view/src/lib/rpc-logged.ts
+ delete mode 100644 view/src/routes/profile.tsx
+
+~/deco/deco-create lucis/login-button* ❯                                                            16:54:31
+```
+
+---
+
+<think><details><summary>Thought Process</summary>Great! Let me verify that the .wrangler files are indeed ignored now by checking if they show up as untracked files.</details></think>
+
+---
+
+Let's verify that the `.wrangler` files are now properly ignored:
+
+---
+
+```bash
+git status
+```
+
+```
+~/deco/deco-create lucis/login-button* ❯ git status                                                 16:54:31
+On branch lucis/login-button
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        .specstory/history/2025-08-16_19-52Z-revert-commit-and-update-gitignore.md
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+~/deco/deco-create lucis/login-button* ❯
+```
+
+---
+
+<think><details><summary>Thought Process</summary>Perfect! The .wrangler files are not showing up as untracked files, which means they're properly ignored now. The only untracked file is the specstory history file that was just created (which is expected).
+
+Let me also verify that the .wrangler files still exist on disk (they should, as we used --cached when removing them from git).</details></think>
+
+---
+
+Perfect! I've successfully:
+
+1. **Reset the commit** - Undid the previous commit while keeping all changes
+2. **Updated `.gitignore`** - Added `.wrangler/` to prevent tracking these temporary build files
+3. **Removed `.wrangler` files from git** - Used `git rm --cached` to remove them from tracking while keeping them on disk
+4. **Re-committed** - Created a new commit with the same message but without the `.wrangler` files
+
+The `.wrangler` directory and its temporary files are now properly ignored by git and won't be committed in future changes. The commit now contains 23 files instead of the original 27 files (5 `.wrangler/tmp` files were removed from the commit).
+
+Your git history is now clean, and the temporary Wrangler build files will stay local and won't clutter your repository! 🎉
 
 ---
 
