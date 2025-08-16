@@ -1,4 +1,4 @@
-import { client } from "./rpc";
+import { client } from "./rpc-logged";
 import {
   useMutation,
   useQueryClient,

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "deco-create": {
+      "type": "http",
+      "url": "https://localhost-cd5fbee2.deco.host/mcp"
+    }
+  }
+}

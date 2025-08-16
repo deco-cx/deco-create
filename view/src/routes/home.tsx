@@ -1,4 +1,4 @@
-import { createRoute, Link, type RootRoute } from "@tanstack/react-router";
+import { createRoute, type RootRoute } from "@tanstack/react-router";
 import {
   CheckCircle,
   Circle,
@@ -6,7 +6,6 @@ import {
   LogIn,
   Sparkles,
   Trash2,
-  User,
 } from "lucide-react";
 import {
   useDeleteTodo,
@@ -17,6 +16,7 @@ import {
 } from "@/lib/hooks";
 import LoggedProvider from "@/components/logged-provider";
 import { Button } from "@/components/ui/button";
+import { DecoButton } from "@/components/deco-button";
 
 function PublicTodoList() {
   const { data: todos } = useListTodos();
@@ -159,16 +159,7 @@ function PublicFallback() {
         <p className="text-xs text-slate-400 mb-3">
           Sign in to access authenticated features.
         </p>
-        <Button
-          asChild
-          size="sm"
-          className="bg-slate-700 text-slate-200 hover:bg-slate-600 hover:text-white border-slate-600"
-        >
-          <a href="/oauth/start" className="inline-flex items-center gap-2">
-            <LogIn className="w-3 h-3" />
-            Login
-          </a>
-        </Button>
+        <DecoButton />
       </div>
     </div>
   );
@@ -198,37 +189,7 @@ function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            {user.data && (
-              <Button
-                asChild
-                size="sm"
-                variant="outline"
-                className="bg-transparent border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
-              >
-                <Link to="/profile" className="inline-flex items-center gap-2">
-                  <User className="w-3 h-3" />
-                  Profile
-                </Link>
-              </Button>
-            )}
-
-            {!user.data && (
-              <Button
-                asChild
-                size="sm"
-                className="bg-slate-700 text-slate-200 hover:bg-slate-600 hover:text-white border-slate-600"
-              >
-                <a
-                  href="/oauth/start"
-                  className="inline-flex items-center gap-2"
-                >
-                  <LogIn className="w-3 h-3" />
-                  Login
-                </a>
-              </Button>
-            )}
-          </div>
+          <DecoButton />
         </div>
 
         {/* Main Content Grid */}
