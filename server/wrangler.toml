@@ -3,6 +3,7 @@ name = "deco-create"
 main = "main.ts"
 compatibility_date = "2025-06-17"
 compatibility_flags = [ "nodejs_compat" ]
+scope = "kmute"
 
 [assets]
 directory = "./view-build"
