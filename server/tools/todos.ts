@@ -1,55 +1,18 @@
 /**
- * This is where you define your tools.
- *
- * Tools are the functions that will be available on your
- * MCP server. They can be called from any other Deco app
- * or from your front-end code via typed RPC. This is the
- * recommended way to build your Web App.
- *
- * @see https://docs.deco.page/en/guides/creating-tools/
+ * Todo-related tools for managing tasks.
+ * 
+ * This file contains all tools related to todo operations including:
+ * - Listing todos
+ * - Generating todos with AI
+ * - Toggling todo completion status
+ * - Deleting todos
  */
 import { createPrivateTool, createTool } from "@deco/workers-runtime/mastra";
 import { z } from "zod";
-import type { Env } from "./main.ts";
-import { todosTable } from "./schema.ts";
-import { getDb } from "./db.ts";
+import type { Env } from "../main.ts";
+import { todosTable } from "../schema.ts";
+import { getDb } from "../db.ts";
 import { eq } from "drizzle-orm";
-
-/**
- * `createPrivateTool` is a wrapper around `createTool` that
- * will call `env.DECO_CHAT_REQUEST_CONTEXT.ensureAuthenticated`
- * before executing the tool.
- *
- * It automatically returns a 401 error if valid user credentials
- * are not present in the request. You can also call it manually
- * to get the user object.
- */
-export const createGetUserTool = (env: Env) =>
-  createPrivateTool({
-    id: "GET_USER",
-    description: "Get the current logged in user",
-    inputSchema: z.object({}),
-    outputSchema: z.object({
-      id: z.string(),
-      name: z.string().nullable(),
-      avatar: z.string().nullable(),
-      email: z.string(),
-    }),
-    execute: async () => {
-      const user = env.DECO_CHAT_REQUEST_CONTEXT.ensureAuthenticated();
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      return {
-        id: user.id,
-        name: user.user_metadata.full_name,
-        avatar: user.user_metadata.avatar_url,
-        email: user.email,
-      };
-    },
-  });
 
 /**
  * This tool is declared as public and can be executed by anyone
@@ -218,8 +181,8 @@ export const createDeleteTodoTool = (env: Env) =>
     },
   });
 
-export const tools = [
-  createGetUserTool,
+// Export all todo-related tools
+export const todoTools = [
   createListTodosTool,
   createGenerateTodoWithAITool,
   createToggleTodoTool,
