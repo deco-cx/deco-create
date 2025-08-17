@@ -7,8 +7,8 @@
 import { DefaultEnv, withRuntime } from "@deco/workers-runtime";
 import { type Env as DecoEnv, StateSchema } from "./deco.gen.ts";
 
-import { workflows } from "./workflows.ts";
-import { tools } from "./tools.ts";
+import { workflows } from "./workflows/index.ts";
+import { tools } from "./tools/index.ts";
 import { views } from "./views.ts";
 
 /**
