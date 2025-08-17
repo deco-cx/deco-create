@@ -19,6 +19,14 @@ react-tailwind-view/
 ├── server/               # MCP Server (Cloudflare Workers + Deco)
 │   ├── main.ts          # Main server entry point
 │   ├── deco.gen.ts      # Generated types for integrations
+│   ├── tools/           # Domain-organized tools (max 300 lines per file)
+│   │   ├── index.ts     # Central export point for all tools
+│   │   ├── todos.ts     # Todo-related tools
+│   │   ├── user.ts      # User-related tools
+│   │   └── [domain].ts  # Additional domain-specific tools
+│   ├── workflows/       # Domain-organized workflows (max 300 lines per file)
+│   │   ├── index.ts     # Central export point for all workflows
+│   │   └── [domain].ts  # Domain-specific workflows
 │   ├── wrangler.toml    # Cloudflare Workers config
 │   └── package.json     # Server dependencies
 └── view/                # React Frontend (Vite + Tailwind)
@@ -342,7 +350,7 @@ function NavigationExamples() {
 1. **Always use `getDb(env)`** - Never create direct database connections
 2. **Schema changes**: Modify `server/schema.ts` then run `npm run db:generate`
 3. **Migrations**: Applied automatically when using `getDb(env)` - no manual commands needed
-4. **CRUD operations**: Follow the patterns in `server/tools.ts` (check existence before update/delete)
+4. **CRUD operations**: Follow the patterns in `server/tools/` domain files (check existence before update/delete)
 5. **Boolean handling**: Convert SQLite integers (0/1) to/from JavaScript booleans
 6. **Error handling**: Wrap database operations in try-catch blocks
 7. **Transactions**: Use `db.transaction()` for multi-step operations
