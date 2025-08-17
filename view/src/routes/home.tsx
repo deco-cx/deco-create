@@ -138,7 +138,7 @@ function LoggedInContent() {
               : (
                 <>
                   <Sparkles className="w-3 h-3 mr-2" />
-                  Generate TODO
+                  Generate TODO with AI
                 </>
               )}
           </Button>
