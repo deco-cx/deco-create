@@ -11,6 +11,14 @@ This is a **Deco MCP (Model Context Protocol) server** template with a **React +
 - The `/view` folder contains the React frontend (Vite + Tailwind CSS)
 - The server serves both MCP endpoints AND the built frontend assets
 
+## Goal
+
+The goal of this template is to help users generate their apps with data schemas, workflows, tools, using AI and third-party API via our RPC framework (check deco.gen.ts).
+
+After this template is initiated, the user will give you prompt to create a new application.
+
+**Required:** Modify README.md and SEO props (in index.html) for the app as soon as you know the app's intent. We shouldn't deploy applications with the same README and title, description of the template.
+
 ## Project Structure
 
 ```
