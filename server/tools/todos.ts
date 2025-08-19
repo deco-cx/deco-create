@@ -1,6 +1,6 @@
 /**
  * Todo-related tools for managing tasks.
- * 
+ *
  * This file contains all tools related to todo operations including:
  * - Listing todos
  * - Generating todos with AI

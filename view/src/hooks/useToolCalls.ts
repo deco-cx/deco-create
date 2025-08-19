@@ -29,25 +29,25 @@ export const useToolCalls = () => {
     };
 
     // Listen for updates from the same tab
-    window.addEventListener("__tool_calls_updated", handler);
-    
+    globalThis.addEventListener("__tool_calls_updated", handler);
+
     // Listen for updates from other tabs
-    window.addEventListener("storage", (e) => {
+    globalThis.addEventListener("storage", (e) => {
       if (e.key === "toolCalls") {
         handler();
       }
     });
 
     return () => {
-      window.removeEventListener("__tool_calls_updated", handler);
-      window.removeEventListener("storage", handler);
+      globalThis.removeEventListener("__tool_calls_updated", handler);
+      globalThis.removeEventListener("storage", handler);
     };
   }, []);
 
   const clearCalls = () => {
     localStorage.removeItem("toolCalls");
     setCalls([]);
-    window.dispatchEvent(new CustomEvent("__tool_calls_updated"));
+    globalThis.dispatchEvent(new CustomEvent("__tool_calls_updated"));
   };
 
   return { calls, clearCalls };

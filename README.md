@@ -10,7 +10,9 @@ web interface built with React and Tailwind CSS.
 
 ## 📝 Development History
 
-This repository uses [Specstory](https://specstory.com/) to track the history of prompts that were used to code this repo. You can inspect the complete development history in the [`.specstory/`](.specstory/) folder.
+This repository uses [Specstory](https://specstory.com/) to track the history of
+prompts that were used to code this repo. You can inspect the complete
+development history in the [`.specstory/`](.specstory/) folder.
 
 ## ✨ Features
 

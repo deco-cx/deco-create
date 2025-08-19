@@ -7,6 +7,13 @@ import {
 import { FailedToFetchUserError } from "@/components/logged-provider";
 import { toast } from "sonner";
 
+export interface User {
+  id: string;
+  email: string;
+  name: string | null;
+  avatar: string | null;
+}
+
 /**
  * This hook will throw an error if the user is not logged in.
  * You can safely use it inside routes that are protected by the `LoggedProvider`.
