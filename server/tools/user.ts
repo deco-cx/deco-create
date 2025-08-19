@@ -1,6 +1,6 @@
 /**
  * User-related tools for authentication and user management.
- * 
+ *
  * This file contains all tools related to user operations including:
  * - Getting current user information
  * - User authentication checks

@@ -1,12 +1,5 @@
 import { createRoute, type RootRoute } from "@tanstack/react-router";
-import {
-  CheckCircle,
-  Circle,
-  Loader,
-  LogIn,
-  Sparkles,
-  Trash2,
-} from "lucide-react";
+import { CheckCircle, Circle, Loader, Sparkles, Trash2 } from "lucide-react";
 import {
   useDeleteTodo,
   useGenerateTodoWithAI,
@@ -16,7 +9,7 @@ import {
 } from "@/lib/hooks";
 import LoggedProvider from "@/components/logged-provider";
 import { Button } from "@/components/ui/button";
-import { DecoButton } from "@/components/deco-button";
+import { UserButton } from "@/components/user-button";
 
 function PublicTodoList() {
   const { data: todos } = useListTodos();
@@ -159,7 +152,7 @@ function PublicFallback() {
         <p className="text-xs text-slate-400 mb-3">
           Sign in to access authenticated features.
         </p>
-        <DecoButton />
+        <UserButton />
       </div>
     </div>
   );
@@ -189,7 +182,7 @@ function HomePage() {
             </div>
           </div>
 
-          <DecoButton />
+          <UserButton />
         </div>
 
         {/* Main Content Grid */}

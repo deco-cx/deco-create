@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, ChevronRight, Copy, LogIn, LogOut } from "lucide-react";
+import { ChevronDown, ChevronRight, Copy, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Popover,
@@ -11,13 +11,10 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { useOptionalUser } from "@/lib/hooks";
-import { useToolCalls } from "@/hooks/useToolCalls";
+import { useOptionalUser, type User } from "@/lib/hooks";
+import { type ToolCall, useToolCalls } from "@/hooks/useToolCalls";
 import { toast } from "sonner";
 
-/**
- * Copy text to clipboard with toast feedback
- */
 const copyToClipboard = async (text: string, label: string) => {
   try {
     await navigator.clipboard.writeText(text);
@@ -27,9 +24,6 @@ const copyToClipboard = async (text: string, label: string) => {
   }
 };
 
-/**
- * Format timestamp to readable time
- */
 const formatTime = (timestamp: number) => {
   const date = new Date(timestamp);
   return date.toLocaleTimeString("en-US", {
@@ -39,12 +33,95 @@ const formatTime = (timestamp: number) => {
   });
 };
 
-/**
- * Tool calls table component
- */
+function ToolCallItem({ call }: { call: ToolCall }) {
+  const hasError = call.output?.error;
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <div className="border border-slate-700 rounded-md bg-slate-800/50">
+      <button
+        onClick={() => setIsExpanded((prev) => !prev)}
+        className="w-full px-2 py-1.5 flex items-center justify-between hover:bg-slate-700/30 transition-colors"
+      >
+        <div className="flex items-center gap-2 text-left">
+          <ChevronRight
+            className={`w-3 h-3 text-slate-500 transition-transform ${
+              isExpanded ? "rotate-90" : ""
+            }`}
+          />
+          <span
+            className={`text-xs font-mono ${
+              hasError ? "text-red-400" : "text-blue-400"
+            }`}
+          >
+            {call.tool}
+          </span>
+          <span className="text-xs text-slate-500">
+            {formatTime(call.timestamp)}
+          </span>
+        </div>
+        {hasError && <span className="text-xs text-red-400 mr-2">Error</span>}
+      </button>
+
+      {isExpanded && (
+        <div className="px-3 py-2 border-t border-slate-700 space-y-2">
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium text-slate-400">
+                Input:
+              </span>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() =>
+                  copyToClipboard(
+                    JSON.stringify(call.input, null, 2),
+                    "Input",
+                  )}
+                className="h-5 px-1.5"
+              >
+                <Copy className="w-3 h-3" />
+              </Button>
+            </div>
+            <pre className="text-xs bg-slate-900 rounded p-2 overflow-x-auto">
+              <code>{JSON.stringify(call.input, null, 2)}</code>
+            </pre>
+          </div>
+
+          <div>
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium text-slate-400">
+                Output:
+              </span>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() =>
+                  copyToClipboard(
+                    JSON.stringify(call.output, null, 2),
+                    "Output",
+                  )}
+                className="h-5 px-1.5"
+              >
+                <Copy className="w-3 h-3" />
+              </Button>
+            </div>
+            <pre
+              className={`text-xs rounded p-2 overflow-x-auto ${
+                hasError ? "bg-red-950/30 text-red-300" : "bg-slate-900"
+              }`}
+            >
+              <code>{JSON.stringify(call.output, null, 2)}</code>
+            </pre>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function ToolCallsTable() {
   const { calls, clearCalls } = useToolCalls();
-  const [expandedCall, setExpandedCall] = useState<number | null>(null);
 
   if (calls.length === 0) {
     return (
@@ -69,106 +146,35 @@ function ToolCallsTable() {
           Clear
         </Button>
       </div>
-      
+
       <div className="space-y-1 max-h-64 overflow-y-auto">
-        {calls.slice().reverse().map((call, index) => {
-          const actualIndex = calls.length - 1 - index;
-          const isExpanded = expandedCall === actualIndex;
-          const hasError = call.output?.error;
-          
-          return (
-            <div
-              key={actualIndex}
-              className="border border-slate-700 rounded-md bg-slate-800/50"
-            >
-              <button
-                onClick={() => setExpandedCall(isExpanded ? null : actualIndex)}
-                className="w-full px-2 py-1.5 flex items-center justify-between hover:bg-slate-700/30 transition-colors"
-              >
-                <div className="flex items-center gap-2 text-left">
-                  <ChevronRight
-                    className={`w-3 h-3 text-slate-500 transition-transform ${
-                      isExpanded ? "rotate-90" : ""
-                    }`}
-                  />
-                  <span className={`text-xs font-mono ${hasError ? 'text-red-400' : 'text-blue-400'}`}>
-                    {call.tool}
-                  </span>
-                  <span className="text-xs text-slate-500">
-                    {formatTime(call.timestamp)}
-                  </span>
-                </div>
-                {hasError && (
-                  <span className="text-xs text-red-400 mr-2">Error</span>
-                )}
-              </button>
-              
-              {isExpanded && (
-                <div className="px-3 py-2 border-t border-slate-700 space-y-2">
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-medium text-slate-400">Input:</span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => copyToClipboard(JSON.stringify(call.input, null, 2), "Input")}
-                        className="h-5 px-1.5"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </Button>
-                    </div>
-                    <pre className="text-xs bg-slate-900 rounded p-2 overflow-x-auto">
-                      <code>{JSON.stringify(call.input, null, 2)}</code>
-                    </pre>
-                  </div>
-                  
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-medium text-slate-400">Output:</span>
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        onClick={() => copyToClipboard(JSON.stringify(call.output, null, 2), "Output")}
-                        className="h-5 px-1.5"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </Button>
-                    </div>
-                    <pre className={`text-xs rounded p-2 overflow-x-auto ${
-                      hasError ? 'bg-red-950/30 text-red-300' : 'bg-slate-900'
-                    }`}>
-                      <code>{JSON.stringify(call.output, null, 2)}</code>
-                    </pre>
-                  </div>
-                </div>
-              )}
-            </div>
-          );
-        })}
+        {calls.slice().reverse().map((call) => (
+          <ToolCallItem
+            key={`call-${call.tool}-${call.timestamp}`}
+            call={call}
+          />
+        ))}
       </div>
     </div>
   );
 }
 
-/**
- * Profile card component
- */
-function ProfileCard({ user }: { user: any }) {
+function ProfileCard({ user }: { user: User }) {
   return (
     <div className="space-y-3">
       <h3 className="text-sm font-medium text-center text-white">Profile</h3>
-      
+
       <div className="space-y-2">
         <div className="flex items-center justify-between">
           <span className="text-xs text-slate-400">Name:</span>
           <span className="text-xs text-white">{user.name || "Not set"}</span>
         </div>
-        
+
         <div className="flex items-center justify-between">
           <span className="text-xs text-slate-400">Email:</span>
           <span className="text-xs text-white">{user.email}</span>
         </div>
-        
+
         <div className="flex items-center justify-between gap-2">
           <span className="text-xs text-slate-400">User ID:</span>
           <div className="flex items-center gap-1">
@@ -190,30 +196,30 @@ function ProfileCard({ user }: { user: any }) {
   );
 }
 
-/**
- * Main DecoButton component
- */
-export function DecoButton() {
+function LoginButton() {
+  return (
+    <Button
+      asChild
+      size="sm"
+      className="bg-slate-700 text-slate-200 hover:bg-slate-600 hover:text-white border-slate-600"
+    >
+      {/* Okay to use <a> instead of <Link> here because it's a route handled by the server */}
+      <a href="/oauth/start" className="inline-flex items-center gap-2">
+        <span>Sign In</span>
+        <img src="/d.png" alt="Deco" className="w-4 h-4" />
+      </a>
+    </Button>
+  );
+}
+
+export function UserButton() {
   const { data: user } = useOptionalUser();
   const [debugOpen, setDebugOpen] = useState(false);
 
-  // Logged out state - simple login button
   if (!user) {
-    return (
-      <Button
-        asChild
-        size="sm"
-        className="bg-slate-700 text-slate-200 hover:bg-slate-600 hover:text-white border-slate-600"
-      >
-        <a href="/oauth/start" className="inline-flex items-center gap-2">
-          <span>Sign In</span>
-          <img src="/d.png" alt="Deco" className="w-4 h-4" />
-        </a>
-      </Button>
-    );
+    return <LoginButton />;
   }
 
-  // Logged in state - button with popover
   const username = user.name || user.email?.split("@")[0] || "user";
 
   return (
@@ -227,7 +233,7 @@ export function DecoButton() {
           <img src="/d.png" alt="Deco" className="w-4 h-4 ml-2" />
         </Button>
       </PopoverTrigger>
-      
+
       <PopoverContent
         className="w-80 bg-slate-800 border-slate-700 text-white p-4"
         align="end"
@@ -247,16 +253,16 @@ export function DecoButton() {
               </a>
             </span>
           </div>
-          
+
           {/* Divider */}
           <div className="border-t border-slate-700" />
-          
+
           {/* Profile Section */}
           <ProfileCard user={user} />
-          
+
           {/* Divider */}
           <div className="border-t border-slate-700" />
-          
+
           {/* Logout Button */}
           <Button
             asChild
@@ -269,16 +275,16 @@ export function DecoButton() {
               <span className="text-xs">Logout</span>
             </a>
           </Button>
-          
+
           {/* Divider */}
           <div className="border-t border-slate-700" />
-          
+
           {/* Debug Section */}
           <div>
             <h3 className="text-sm font-medium text-center text-white mb-2">
               Debug
             </h3>
-            
+
             <Collapsible open={debugOpen} onOpenChange={setDebugOpen}>
               <CollapsibleTrigger asChild>
                 <Button
@@ -294,12 +300,12 @@ export function DecoButton() {
                   />
                 </Button>
               </CollapsibleTrigger>
-              
+
               <CollapsibleContent className="mt-2">
                 <ToolCallsTable />
               </CollapsibleContent>
             </Collapsible>
-            
+
             {/* Future debug features note */}
             <p className="text-xs text-slate-500 text-center mt-2">
               More debug features coming soon

@@ -35,7 +35,7 @@ export default function LoggedProvider(
     <ErrorBoundary
       onError={(error) => {
         if (error instanceof FailedToFetchUserError) {
-          window.location.href = "/oauth/start?next=" +
+          globalThis.location.href = "/oauth/start?next=" +
             encodeURIComponent(error.next ?? globalThis.location.href);
           return;
         }
