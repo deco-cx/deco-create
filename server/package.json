@@ -10,11 +10,11 @@
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@deco/workers-runtime": "npm:@jsr/deco__workers-runtime@0.11.1",
+    "@deco/workers-runtime": "npm:@jsr/deco__workers-runtime@0.16.0",
     "zod": "^3.24.3"
   },
   "devDependencies": {
-    "deco-cli": "^0.14.2",
+    "deco-cli": "^0.17.3",
     "drizzle-kit": "^0.31.4",
     "wrangler": "^4.28.0"
   }
