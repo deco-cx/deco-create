@@ -5,8 +5,8 @@
   "scripts": {
     "dev": "deco dev --clean-build-dir ./view-build",
     "deploy": "wrangler build && deco deploy ./dist",
+    "build": "wrangler build",
     "gen": "deco gen --output=deco.gen.ts",
-    "gen:self": "deco gen --self=$DECO_SELF_URL --output=deco.gen.ts",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
