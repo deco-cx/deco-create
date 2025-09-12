@@ -13,6 +13,7 @@
     "gen": "cd server && deco gen --output=deco.gen.ts",
     "gen:self": "cd server && deco gen --self=$DECO_SELF_URL --output=deco.gen.ts",
     "deploy": "cd view && npm run build && cd ../server && npm run deploy",
+    "build": "cd view && npm run build && cd ../server && npm run build",
     "db:generate": "cd server && npm run db:generate"
   },
   "devDependencies": {
