@@ -5,7 +5,7 @@
  * application at /.
  */
 import { DefaultEnv, withRuntime } from "@deco/workers-runtime";
-import { type Env as DecoEnv, StateSchema } from "./deco.gen.ts";
+import { type Env as DecoEnv, StateSchema } from "../shared/deco.gen.ts";
 
 import { workflows } from "./workflows/index.ts";
 import { tools } from "./tools/index.ts";
@@ -20,24 +20,8 @@ import { views } from "./views.ts";
  */
 export type Env = DefaultEnv & DecoEnv & {
   ASSETS: {
-    fetch: (request: Request) => Promise<Response>;
+    fetch: (request: Request, init?: RequestInit) => Promise<Response>;
   };
-};
-
-const fallbackToView = (viewPath: string = "/") => (req: Request, env: Env) => {
-  const LOCAL_URL = "http://localhost:4000";
-  const url = new URL(req.url);
-  const useDevServer = (req.headers.get("origin") || req.headers.get("host"))
-    ?.includes("localhost");
-
-  const request = new Request(
-    useDevServer
-      ? new URL(`${url.pathname}${url.search}`, LOCAL_URL)
-      : new URL(viewPath, req.url),
-    req,
-  );
-
-  return useDevServer ? fetch(request) : env.ASSETS.fetch(request);
 };
 
 const runtime = withRuntime<Env, typeof StateSchema>({
@@ -72,7 +56,12 @@ const runtime = withRuntime<Env, typeof StateSchema>({
   views,
   workflows,
   tools,
-  fetch: fallbackToView("/"),
+  /**
+   * Fallback directly to assets for all requests that do not match a tool, workflow or auth. 
+   * If you wanted to add custom api routes that dont make sense to be a tool or workflow, 
+   * you can add them on this handler.
+   */
+  fetch: (req, env) => env.ASSETS.fetch(req),
 });
 
 export const Workflow = runtime.Workflow;
