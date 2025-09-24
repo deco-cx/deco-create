@@ -68,7 +68,6 @@ and the React frontend.
 
 - **`npm run dev`** - Start development with hot reload
 - **`npm run gen`** - Generate types for external integrations
-- **`npm run gen:self`** - Generate types for your own tools/workflows
 - **`npm run deploy`** - Deploy to production
 
 ## 🔗 Frontend ↔ Server Communication
