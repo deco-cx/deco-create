@@ -57,8 +57,8 @@ const runtime = withRuntime<Env, typeof StateSchema>({
   workflows,
   tools,
   /**
-   * Fallback directly to assets for all requests that do not match a tool, workflow or auth. 
-   * If you wanted to add custom api routes that dont make sense to be a tool or workflow, 
+   * Fallback directly to assets for all requests that do not match a tool, workflow or auth.
+   * If you wanted to add custom api routes that dont make sense to be a tool or workflow,
    * you can add them on this handler.
    */
   fetch: (req, env) => env.ASSETS.fetch(req),

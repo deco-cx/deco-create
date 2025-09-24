@@ -5,10 +5,10 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "deco link -- vite",
     "configure": "deco configure",
     "gen": "deco gen --output=shared/deco.gen.ts",
-    "deploy": "npm run build && deco deploy ./dist",
+    "deploy": "npm run build && deco deploy ./dist/server",
     "build": "vite build",
     "db:generate": "drizzle-kit generate"
   },
@@ -36,7 +36,7 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.13.4",
     "concurrently": "^9.2.0",
-    "deco-cli": "^0.21.0",
+    "deco-cli": "^0.21.1",
     "drizzle-kit": "^0.31.4",
     "typescript": "^5.7.2",
     "@types/react": "^19.0.8",
