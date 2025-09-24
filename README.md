@@ -33,7 +33,6 @@ development history in the [`.specstory/`](.specstory/) folder.
 ### Prerequisites
 
 - Node.js ≥22.0.0
-- [Deco CLI](https://deco.chat): `npm i -g deco-cli`
 
 ### Setup
 
@@ -86,7 +85,7 @@ const workflowResult = await client.MY_WORKFLOW({ input: "data" });
 ## 📖 Learn More
 
 This template is built for deploying primarily on top of the
-[Deco platform](https://deco.chat/about) which can be found at the
+[Deco platform](https://decocms.com) which can be found at the
 [deco-cx/chat](https://github.com/deco-cx/chat) repository.
 
 Documentation can be found at [https://docs.deco.page](https://docs.deco.page)
@@ -94,4 +93,4 @@ Documentation can be found at [https://docs.deco.page](https://docs.deco.page)
 ---
 
 **Ready to build your next MCP server with a beautiful frontend?
-[Get started now!](https://deco.chat)**
+[Get started now!](https://admin.decocms.com)**
