@@ -6,7 +6,7 @@ compatibility_flags = [ "nodejs_compat" ]
 scope = "kmute"
 
 [assets]
-directory = "./dist"
+directory = "./dist/client"
 binding = "ASSETS"
 not_found_handling = "single-page-application"
 run_worker_first = true
@@ -25,8 +25,3 @@ new_classes = [ "Workflow" ]
 [[durable_objects.bindings]]
 name = "DECO_WORKFLOW_DO"
 class_name = "Workflow"
-
-[[rules]]
-type = "Text"
-globs = [ "**/*.sql" ]
-fallthrough = true
