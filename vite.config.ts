@@ -6,21 +6,9 @@ import deco from "./plugin";
 
 import path from "path";
 
-const VITE_SERVER_ENVIRONMENT_NAME = "server";
-
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [
-    react(),
-    cloudflare({
-      configPath: "wrangler.toml",
-      viteEnvironment: {
-        name: VITE_SERVER_ENVIRONMENT_NAME,
-      },
-    }),
-    tailwindcss(),
-    deco(),
-  ],
+  plugins: [react(), tailwindcss(), deco()],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./view/src"),
