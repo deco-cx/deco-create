@@ -7,9 +7,15 @@
 import { DefaultEnv, withRuntime } from "@deco/workers-runtime";
 import { type Env as DecoEnv, StateSchema } from "../shared/deco.gen.ts";
 
+import fs from "fs/promises";
+import path from "path";
+import process from "process";
+
 import { workflows } from "./workflows/index.ts";
 import { tools } from "./tools/index.ts";
 import { views } from "./views.ts";
+
+import { serveStatic } from "./http/serveStatic.ts";
 
 /**
  * This Env type is the main context object that is passed to
@@ -18,11 +24,12 @@ import { views } from "./views.ts";
  * It includes all of the generated types from your
  * Deco bindings, along with the default ones.
  */
-export type Env = DefaultEnv & DecoEnv & {
-  ASSETS: {
-    fetch: (request: Request, init?: RequestInit) => Promise<Response>;
+export type Env = DefaultEnv &
+  DecoEnv & {
+    ASSETS: {
+      fetch: (request: Request, init?: RequestInit) => Promise<Response>;
+    };
   };
-};
 
 const runtime = withRuntime<Env, typeof StateSchema>({
   oauth: {
@@ -61,7 +68,9 @@ const runtime = withRuntime<Env, typeof StateSchema>({
    * If you wanted to add custom api routes that dont make sense to be a tool or workflow,
    * you can add them on this handler.
    */
-  fetch: (req, env) => env.ASSETS.fetch(req),
+  fetch: serveStatic({
+    root: "/Users/viktor/repos/deco-create/dist",
+  }),
 });
 
 export const Workflow = runtime.Workflow;
