@@ -5,11 +5,11 @@
  * application at /.
  */
 import { DefaultEnv, withRuntime } from "@deco/workers-runtime";
-import { type Env as DecoEnv, StateSchema } from "../shared/deco.gen.ts";
+import { type Env as DecoEnv, Scopes, StateSchema } from "../shared/deco.gen.ts";
 
-import { workflows } from "./workflows/index.ts";
 import { tools } from "./tools/index.ts";
 import { views } from "./views.ts";
+import { workflows } from "./workflows/index.ts";
 
 /**
  * This Env type is the main context object that is passed to
@@ -30,11 +30,11 @@ const runtime = withRuntime<Env, typeof StateSchema>({
      * These scopes define the asking permissions of your
      * app when a user is installing it. When a user
      * authorizes your app for using AI_GENERATE, you will
-     * now be able to use `env.DECO_CHAT_WORKSPACE_API.AI_GENERATE`
+     * now be able to use `env.AI_GATEWAY.AI_GENERATE`
      * and utilize the user's own AI Gateway, without having to
      * deploy your own, setup any API keys, etc.
      */
-    scopes: ["AI_GENERATE", "AI_GENERATE_OBJECT"],
+    scopes: [Scopes.AI_GATEWAY.AI_GENERATE, Scopes.AI_GATEWAY.AI_GENERATE_OBJECT, Scopes.DATABASE.DATABASES_RUN_SQL],
     /**
      * The state schema of your Application defines what
      * your installed App state will look like. When a user
