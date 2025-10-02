@@ -5,7 +5,11 @@
  * application at /.
  */
 import { DefaultEnv, withRuntime } from "@deco/workers-runtime";
-import { type Env as DecoEnv, Scopes, StateSchema } from "../shared/deco.gen.ts";
+import {
+  type Env as DecoEnv,
+  Scopes,
+  StateSchema,
+} from "../shared/deco.gen.ts";
 
 import { tools } from "./tools/index.ts";
 import { views } from "./views.ts";
@@ -34,7 +38,11 @@ const runtime = withRuntime<Env, typeof StateSchema>({
      * and utilize the user's own AI Gateway, without having to
      * deploy your own, setup any API keys, etc.
      */
-    scopes: [Scopes.AI_GATEWAY.AI_GENERATE, Scopes.AI_GATEWAY.AI_GENERATE_OBJECT, Scopes.DATABASE.DATABASES_RUN_SQL],
+    scopes: [
+      Scopes.AI_GATEWAY.AI_GENERATE,
+      Scopes.AI_GATEWAY.AI_GENERATE_OBJECT,
+      Scopes.DATABASE.DATABASES_RUN_SQL,
+    ],
     /**
      * The state schema of your Application defines what
      * your installed App state will look like. When a user

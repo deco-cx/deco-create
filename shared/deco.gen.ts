@@ -1351,22 +1351,22 @@ export interface AGENTS_CREATEInput {
    */
   access?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_163
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_163
+    )
     | Null_8;
   /**
    * Temperature of the LLM. Must be between 0 and 1.
    */
   temperature?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | Number_24
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | Number_24
+    )
     | Null_9;
 }
 /**
@@ -1501,22 +1501,22 @@ export interface AGENTS_CREATEOutput {
    */
   access?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_176
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_176
+    )
     | Null_11;
   /**
    * Temperature of the LLM. Must be between 0 and 1.
    */
   temperature?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | Number_28
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | Number_28
+    )
     | Null_12;
 }
 /**
@@ -1690,22 +1690,22 @@ export interface AGENTS_GETOutput {
    */
   access?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_191
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_191
+    )
     | Null_14;
   /**
    * Temperature of the LLM. Must be between 0 and 1.
    */
   temperature?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | Number_32
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | Number_32
+    )
     | Null_15;
 }
 /**
@@ -1859,22 +1859,22 @@ export interface Object_56 {
    */
   access?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_204
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_204
+    )
     | Null_17;
   /**
    * Temperature of the LLM. Must be between 0 and 1.
    */
   temperature?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | Number_36
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | Number_36
+    )
     | Null_18;
   lastAccess?: StringNull_4;
   lastAccessor?: StringNull_5;
@@ -2016,22 +2016,22 @@ export interface Object_61 {
    */
   access?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_220
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_220
+    )
     | Null_22;
   /**
    * Temperature of the LLM. Must be between 0 and 1.
    */
   temperature?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | Number_40
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | Number_40
+    )
     | Null_23;
 }
 /**
@@ -2166,22 +2166,22 @@ export interface AGENTS_UPDATEOutput {
    */
   access?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_233
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_233
+    )
     | Null_25;
   /**
    * Temperature of the LLM. Must be between 0 and 1.
    */
   temperature?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | Number_44
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | Number_44
+    )
     | Null_26;
 }
 /**
@@ -3541,27 +3541,27 @@ export interface Object_95 {
   icon?: String_339;
   access?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_340
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_340
+    )
     | Null_27;
   appName?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_341
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_341
+    )
     | Null_28;
   appId?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_342
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_342
+    )
     | Null_29;
   connection: Object_96 | Object_97 | Object_99 | Object_100 | Object_101;
   metadata?: Object_102 | Null_30;
@@ -4656,19 +4656,19 @@ export interface INTEGRATIONS_CREATEInput {
   icon?: String_463;
   access?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_464
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_464
+    )
     | Null_42;
   appId?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_465
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_465
+    )
     | Null_43;
   connection?: Object_134 | Object_135 | Object_137 | Object_138 | Object_139;
   metadata?: Object_140 | Null_44;
@@ -4850,27 +4850,27 @@ export interface Object_145 {
   icon?: String_491;
   access?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_492
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_492
+    )
     | Null_46;
   appName?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_493
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_493
+    )
     | Null_47;
   appId?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_494
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_494
+    )
     | Null_48;
   connection: Object_146 | Object_147 | Object_149 | Object_150 | Object_151;
   metadata?: Object_152 | Null_49;
@@ -4986,27 +4986,27 @@ export interface Object_157 {
   icon?: String_517;
   access?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_518
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_518
+    )
     | Null_51;
   appName?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_519
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_519
+    )
     | Null_52;
   appId?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_520
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_520
+    )
     | Null_53;
   connection: Object_158 | Object_159 | Object_161 | Object_162 | Object_163;
   metadata?: Object_164 | Null_54;
@@ -6007,11 +6007,11 @@ export interface Object_181 {
   name?: String_608;
   description?:
     | (
-        | {
-            [k: string]: unknown;
-          }
-        | String_609
-      )
+      | {
+        [k: string]: unknown;
+      }
+      | String_609
+    )
     | Null_64;
   content?: String_610;
 }
@@ -7110,8 +7110,6 @@ export interface Object_239 {
  * By default this webhook returns the LLM generate text response.
  *
  * If a JSONSchema is specified, it returns a JSON with the specified schema.
- *
- *
  */
 export interface Object_240 {
   [k: string]: unknown;
@@ -7328,8 +7326,6 @@ export interface Object_248 {
  * By default this webhook returns the LLM generate text response.
  *
  * If a JSONSchema is specified, it returns a JSON with the specified schema.
- *
- *
  */
 export interface Object_249 {
   [k: string]: unknown;
@@ -7638,8 +7634,6 @@ export interface Object_260 {
  * By default this webhook returns the LLM generate text response.
  *
  * If a JSONSchema is specified, it returns a JSON with the specified schema.
- *
- *
  */
 export interface Object_261 {
   [k: string]: unknown;
@@ -7787,8 +7781,6 @@ export interface Object_271 {
  * By default this webhook returns the LLM generate text response.
  *
  * If a JSONSchema is specified, it returns a JSON with the specified schema.
- *
- *
  */
 export interface Object_272 {
   [k: string]: unknown;
@@ -8306,21 +8298,23 @@ export interface Object_287 {
 import { z } from "zod";
 
 export type Mcp<T extends Record<string, (input: any) => Promise<any>>> = {
-  [K in keyof T]: ((
-    input: Parameters<T[K]>[0],
-  ) => Promise<ReturnType<T[K]>>) & {
-    asTool: () => Promise<{
-      inputSchema: z.ZodType<Parameters<T[K]>[0]>;
-      outputSchema?: z.ZodType<ReturnType<T[K]>>;
-      description: string;
-      id: string;
-      execute: ({
-        context,
-      }: {
-        context: Parameters<T[K]>[0];
-      }) => Promise<ReturnType<T[K]>>;
-    }>;
-  };
+  [K in keyof T]:
+    & ((
+      input: Parameters<T[K]>[0],
+    ) => Promise<ReturnType<T[K]>>)
+    & {
+      asTool: () => Promise<{
+        inputSchema: z.ZodType<Parameters<T[K]>[0]>;
+        outputSchema?: z.ZodType<ReturnType<T[K]>>;
+        description: string;
+        id: string;
+        execute: ({
+          context,
+        }: {
+          context: Parameters<T[K]>[0];
+        }) => Promise<ReturnType<T[K]>>;
+      }>;
+    };
 };
 
 export const StateSchema = z.object({

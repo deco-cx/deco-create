@@ -7,19 +7,15 @@
  * - Toggling todo completion status
  * - Deleting todos
  */
-import { createPrivateTool, createTool } from "@deco/workers-runtime/mastra";
+import { createPrivateTool } from "@deco/workers-runtime/mastra";
 import { z } from "zod";
 import type { Env } from "../main.ts";
 import { todosTable } from "../schema.ts";
 import { getDb } from "../db.ts";
 import { eq } from "drizzle-orm";
 
-/**
- * This tool is declared as public and can be executed by anyone
- * that has access to your MCP server.
- */
 export const createListTodosTool = (env: Env) =>
-  createTool({
+  createPrivateTool({
     id: "LIST_TODOS",
     description: "List all todos",
     inputSchema: z.object({}),
