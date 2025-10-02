@@ -11,7 +11,7 @@ import LoggedProvider from "@/components/logged-provider";
 import { Button } from "@/components/ui/button";
 import { UserButton } from "@/components/user-button";
 
-function PublicTodoList() {
+function TodoList() {
   const { data: todos } = useListTodos();
   const toggleTodo = useToggleTodo();
   const deleteTodo = useDeleteTodo();
@@ -27,12 +27,12 @@ function PublicTodoList() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-medium text-white">TODOs (Public)</h2>
+      <h2 className="text-lg font-medium text-white">Your TODOs</h2>
 
       {todos?.todos && todos.todos.length > 0
         ? (
           <div className="space-y-2">
-            {todos.todos.slice(0, 3).map((todo) => (
+            {todos.todos.slice(0, 3).map((todo: any) => (
               <div
                 key={todo.id}
                 className="group relative bg-slate-800 border border-slate-700 rounded-lg p-3 flex items-center gap-3 hover:bg-slate-700 transition-colors"
@@ -143,17 +143,12 @@ function LoggedInContent() {
 
 function PublicFallback() {
   return (
-    <div className="space-y-4">
-      <h2 className="text-sm font-medium text-slate-400">
-        The content below is only visible for authenticated users
-      </h2>
-      <div className="bg-slate-800 border border-slate-700 rounded-lg p-4 text-center">
-        <h3 className="text-sm font-medium text-white mb-2">Login Required</h3>
-        <p className="text-xs text-slate-400 mb-3">
-          Sign in to access authenticated features.
-        </p>
-        <UserButton />
-      </div>
+    <div className="bg-slate-800 border border-slate-700 rounded-lg p-8 text-center">
+      <h3 className="text-sm font-medium text-white mb-2">Login Required</h3>
+      <p className="text-xs text-slate-400 mb-4">
+        Sign in to access your todos and authenticated features.
+      </p>
+      <UserButton />
     </div>
   );
 }
@@ -185,24 +180,28 @@ function HomePage() {
           <UserButton />
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid md:grid-cols-2 gap-8 min-h-[400px]">
-          {/* Left Column - Public Content */}
-          <div>
-            <PublicTodoList />
-          </div>
+        {/* Main Content */}
+        {user.data
+          ? (
+            <LoggedProvider>
+              <div className="grid md:grid-cols-2 gap-8 min-h-[400px]">
+                {/* Left Column - Todo List */}
+                <div>
+                  <TodoList />
+                </div>
 
-          {/* Right Column - Auth Content */}
-          <div>
-            {user.data
-              ? (
-                <LoggedProvider>
+                {/* Right Column - AI Features */}
+                <div>
                   <LoggedInContent />
-                </LoggedProvider>
-              )
-              : <PublicFallback />}
-          </div>
-        </div>
+                </div>
+              </div>
+            </LoggedProvider>
+          )
+          : (
+            <div className="flex items-center justify-center min-h-[400px]">
+              <PublicFallback />
+            </div>
+          )}
 
         {/* Footer */}
         <div className="mt-12 pt-6 border-t border-slate-700">

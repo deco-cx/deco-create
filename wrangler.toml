@@ -2,7 +2,7 @@
 name = "deco-create"
 main = "server/main.ts"
 compatibility_date = "2025-06-17"
-compatibility_flags = ["nodejs_compat"]
+compatibility_flags = [ "nodejs_compat" ]
 scope = "kmute"
 
 [assets]
@@ -28,7 +28,7 @@ integration_name = "@deco/database"
 
 [[migrations]]
 tag = "v1"
-new_classes = ["Workflow"]
+new_classes = [ "Workflow" ]
 
 [durable_objects]
 [[durable_objects.bindings]]
