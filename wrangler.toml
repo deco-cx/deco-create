@@ -2,7 +2,7 @@
 name = "deco-create"
 main = "server/main.ts"
 compatibility_date = "2025-06-17"
-compatibility_flags = [ "nodejs_compat" ]
+compatibility_flags = ["nodejs_compat"]
 scope = "kmute"
 
 [assets]
@@ -13,13 +13,22 @@ run_worker_first = true
 
 [deco]
 workspace = "kmute"
-bindings = []
 enable_workflows = true
 local = false
 
+[[deco.bindings]]
+name = "AI_GATEWAY"
+type = "mcp"
+integration_name = "@deco/ai-gateway"
+
+[[deco.bindings]]
+name = "DATABASE"
+type = "mcp"
+integration_name = "@deco/database"
+
 [[migrations]]
 tag = "v1"
-new_classes = [ "Workflow" ]
+new_classes = ["Workflow"]
 
 [durable_objects]
 [[durable_objects.bindings]]

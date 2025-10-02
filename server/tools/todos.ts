@@ -69,7 +69,7 @@ export const createGenerateTodoWithAITool = (env: Env) =>
     }),
     execute: async () => {
       const db = await getDb(env);
-      const generatedTodo = await env.DECO_CHAT_WORKSPACE_API
+      const generatedTodo = await env.AI_GATEWAY
         .AI_GENERATE_OBJECT({
           model: "openai:gpt-4.1-mini",
           messages: [
