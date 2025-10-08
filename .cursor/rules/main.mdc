@@ -87,9 +87,10 @@ react-tailwind-view/
 ```typescript
 // server/main.ts structure
 import { withRuntime } from "@deco/workers-runtime";
+import { createPrivateTool } from "@deco/workers-runtime/mastra";
 
-// 1. Define tools (functions the MCP can call)
-const createMyTool = (env: Env) => createTool({
+// 1. Define tools (functions the MCP can call) - Use createPrivateTool by default
+const createMyTool = (env: Env) => createPrivateTool({
   id: "MY_TOOL",
   description: "Tool description",
   inputSchema: z.object({ /* input schema */ }),
@@ -324,13 +325,15 @@ function NavigationExamples() {
 ## Development Best Practices
 
 ### When Adding New Tools:
-1. Add tool definition in `server/main.ts`
-2. Include in `withRuntime` tools array
-3. Run `npm run gen` to update external integration types
-4. Start server with `npm run dev` and copy the development URL from logs
-5. Run `DECO_SELF_URL=<your-dev-url> npm run gen:self` to generate self-types
-6. Create TanStack Query hooks in `view/src/hooks/` to wrap RPC calls
-7. Use the hooks in components instead of calling `client.YOUR_TOOL()` directly
+1. **Plan first** - Create a planning document (see "Planning-First Development Approach" above)
+2. **Use `createPrivateTool` by default** - Only use `createTool` for public endpoints
+3. Add tool definition in `server/main.ts` or domain-specific files in `server/tools/`
+4. Include in `withRuntime` tools array
+5. Run `npm run gen` to update external integration types
+6. Start server with `npm run dev` and copy the development URL from logs
+7. Run `DECO_SELF_URL=<your-dev-url> npm run gen:self` to generate self-types
+8. Create TanStack Query hooks in `view/src/hooks/` to wrap RPC calls
+9. Use the hooks in components instead of calling `client.YOUR_TOOL()` directly
 
 ### When Adding New Workflows:
 1. Create workflow in `server/main.ts`
@@ -364,6 +367,168 @@ function NavigationExamples() {
 7. **Transactions**: Use `db.transaction()` for multi-step operations
 8. **Types**: Leverage Drizzle's `InferSelectModel` and `InferInsertModel` for type safety
 
+## Development Guidelines and Best Practices
+
+### Tool Creation Defaults
+
+**🔥 CRITICAL: Use `createPrivateTool` by Default**
+
+Most applications should use `createPrivateTool` instead of `createTool` for security and proper access control:
+
+```typescript
+// ✅ PREFERRED: Use createPrivateTool by default
+import { createPrivateTool } from "@deco/workers-runtime/mastra";
+
+const createMyTool = (env: Env) => createPrivateTool({
+  id: "MY_TOOL",
+  description: "Tool description",
+  inputSchema: z.object({ /* input schema */ }),
+  outputSchema: z.object({ /* output schema */ }),
+  execute: async ({ context }) => {
+    // Tool logic here
+    return { /* result */ };
+  },
+});
+```
+
+**When to use `createTool` (public tools):**
+- Webhook endpoints that need to be publicly accessible
+- Public API endpoints for external integrations
+- Tools that don't require authentication
+
+**When to use `createPrivateTool` (default choice):**
+- Internal business logic tools
+- User-specific operations
+- Data manipulation tools
+- Most application functionality
+
+### Database Usage Philosophy
+
+**Not Everything Needs Database Storage**
+
+While the template includes database capabilities, consider whether your application actually needs persistent storage:
+
+**✅ Good candidates for database storage:**
+- User accounts and profiles
+- Application-specific data that needs persistence
+- Configuration settings
+- Audit logs and history
+- Complex relational data
+
+**❌ Consider alternatives to database for:**
+- Simple configuration (use environment variables)
+- Temporary data (use in-memory storage)
+- External API data (cache in KV store or fetch on demand)
+- Static content (use files or external storage)
+- Session data (use JWT tokens or external session stores)
+
+**Example: Simple counter without database:**
+```typescript
+// Instead of storing in database, use KV store for simple data
+const createCounterTool = (env: Env) => createPrivateTool({
+  id: "INCREMENT_COUNTER",
+  description: "Increment a simple counter",
+  inputSchema: z.object({ key: z.string() }),
+  outputSchema: z.object({ count: z.number() }),
+  execute: async ({ context }) => {
+    const currentCount = await env.KV.get(`counter:${context.key}`) || "0";
+    const newCount = parseInt(currentCount) + 1;
+    await env.KV.put(`counter:${context.key}`, newCount.toString());
+    return { count: newCount };
+  },
+});
+```
+
+### Planning-First Development Approach
+
+**🎯 RECOMMENDED: Create Planning Documents Before Coding**
+
+Before implementing features, create a detailed planning document that outlines:
+
+1. **Create a planning file** (e.g., `FEATURE_PLAN.md`) with:
+   - Feature requirements and user stories
+   - Data models and relationships (if database is needed)
+   - API endpoints and tool definitions
+   - Frontend components and routes
+   - Integration points with external services
+
+2. **Follow the established patterns** from these rules:
+   - Use `createPrivateTool` by default
+   - Follow domain organization (max 300 lines per file)
+   - Plan TanStack Query hooks for frontend integration
+   - Consider whether database storage is actually needed
+
+3. **Example planning structure:**
+```markdown
+# Feature: User Task Management
+
+## Requirements
+- Users can create, read, update, delete tasks
+- Tasks have title, description, due date, priority
+- Users can mark tasks as complete
+- Tasks are private to each user
+
+## Data Model
+- Use database for task persistence (user-specific data)
+- Schema: tasks table with user_id foreign key
+
+## Tools Needed
+- CREATE_TASK (createPrivateTool)
+- GET_USER_TASKS (createPrivateTool)
+- UPDATE_TASK (createPrivateTool)
+- DELETE_TASK (createPrivateTool)
+
+## Frontend Components
+- TaskList component
+- TaskForm component
+- TaskItem component
+
+## Hooks
+- useCreateTask (useMutation)
+- useUserTasks (useQuery)
+- useUpdateTask (useMutation)
+- useDeleteTask (useMutation)
+```
+
+### Authentication and Public URL Requirements
+
+**⚠️ IMPORTANT: Initial Deployment Required for Authentication**
+
+Due to OAuth callback URL requirements, you must deploy your application once before authentication will work:
+
+1. **Initial deployment is required:**
+   ```bash
+   npm run deploy
+   ```
+   This creates a public `.deco.page` URL for your application.
+
+2. **Authentication setup:**
+   - After deployment, your app will have a public URL like `https://your-app.deco.page`
+   - The login functionality at `/oauth/start` requires this public URL for OAuth callbacks
+   - Local development (`npm run dev`) will NOT have working authentication until after the first deployment
+
+3. **Development workflow:**
+   ```bash
+   # 1. Initial setup and development
+   npm run dev  # Authentication won't work yet
+   
+   # 2. Deploy to get public URL
+   npm run deploy  # Creates https://your-app.deco.page
+   
+   # 3. Continue development with working auth
+   npm run dev  # Now authentication works via the public URL
+   ```
+
+4. **Why this is necessary:**
+   - OAuth providers (Google, GitHub, etc.) require valid callback URLs
+   - Local development URLs (localhost, deco.host tunnels) are not accepted by OAuth providers
+   - The public `.deco.page` URL provides a stable callback endpoint
+
+5. **Testing authentication:**
+   - Visit your deployed app at `https://your-app.deco.page/oauth/start`
+   - Complete the OAuth flow
+   - Authentication state will work in both deployed and local development environments
+
 ## Environment Setup
 
 ### Prerequisites:
@@ -377,6 +542,8 @@ function NavigationExamples() {
 2. `npm install` - Install all dependencies
 3. `npm run configure` - Configure the app with the desired name and select its workspace
 4. `npm run dev` - Start development
+5. **`npm run deploy`** - Deploy once to enable authentication (creates public URL)
+6. Continue development with `npm run dev` (authentication now works)
 
 ## Integration with Deco Platform
 
@@ -411,10 +578,11 @@ This template includes **Drizzle ORM** with **SQLite** (Cloudflare Durable Objec
 import { getDb } from "./db.ts";
 import { eq } from "drizzle-orm";
 import { myTable } from "./schema.ts";
+import { createPrivateTool } from "@deco/workers-runtime/mastra";
 
-// ✅ CORRECT: Always use getDb(env) in tools
+// ✅ CORRECT: Always use getDb(env) in tools and createPrivateTool by default
 export const createMyDatabaseTool = (env: Env) =>
-  createTool({
+  createPrivateTool({
     id: "MY_DATABASE_TOOL",
     description: "Interact with database",
     inputSchema: z.object({ /* input schema */ }),
