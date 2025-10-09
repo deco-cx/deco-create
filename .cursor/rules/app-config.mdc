@@ -1,0 +1,141 @@
+---
+alwaysApply: true
+---
+
+# App Configuration Requirements Pattern
+
+## Purpose: Requiring User Configuration for Your App
+
+This pattern is used when your Deco app **requires configuration from users** during installation or setup. Common examples include:
+
+- **API Keys**: Third-party service credentials (OpenAI, Stripe, SendGrid, etc.)
+- **Global Settings**: App-wide configuration options
+- **Feature Flags**: Enable/disable functionality per installation
+- **Custom Parameters**: Installation-specific values
+
+When users install your app from the Deco marketplace, they'll see a configuration form with the fields you define.
+
+## How Deco Apps Work
+
+Deco apps are **multi-tenant** - one app can be installed by multiple users/organizations, each with their own configuration. The StateSchema extension pattern ensures:
+
+1. **Per-Installation Config**: Each installation gets its own configuration values
+2. **Type Safety**: Configuration is typed throughout your application
+3. **Auto-Generated Forms**: Deco automatically creates installation forms from your schema
+4. **Runtime Access**: Your tools and workflows can access the configuration via `env.state`
+
+## ❌ NEVER Modify Auto-Generated Files
+
+**CRITICAL:** The `shared/deco.gen.ts` file is auto-generated and MUST NOT be edited manually. Any changes will be overwritten when running `npm run gen`.
+
+## ✅ ALWAYS Use .extend() in main.ts
+
+To require configuration from users, extend the StateSchema in `server/main.ts`:
+
+```typescript
+import { StateSchema } from "../shared/deco.gen.ts";
+import { z } from "zod";
+
+// ✅ CORRECT: Extend StateSchema to require user configuration
+const ExtendedStateSchema = StateSchema.extend({
+  // Required API key - users must provide this during installation
+  openaiApiKey: z.string().describe("OpenAI API key for AI functionality"),
+  
+  // Optional global settings with defaults
+  maxRequestsPerMinute: z.number().default(60).describe("Rate limit for API calls"),
+  
+  // Feature flags
+  enableAdvancedFeatures: z.boolean().default(false).describe("Enable experimental features"),
+  
+  // Complex configuration objects
+  emailConfig: z.object({
+    smtpHost: z.string(),
+    smtpPort: z.number().default(587),
+    username: z.string(),
+    password: z.string(),
+  }).optional().describe("Email service configuration"),
+});
+
+// Use ExtendedStateSchema in withRuntime
+const runtime = withRuntime<Env, typeof ExtendedStateSchema>({
+  oauth: {
+    scopes: [/* ... */],
+    state: ExtendedStateSchema, // ← Use the extended schema
+  },
+  // ...
+});
+```
+
+## Accessing Configuration in Tools
+
+```typescript
+import { createPrivateTool } from "@deco/workers-runtime/mastra";
+
+const createMyTool = (env: Env) => createPrivateTool({
+  id: "MY_TOOL",
+  description: "Tool that uses app configuration",
+  inputSchema: z.object({ message: z.string() }),
+  outputSchema: z.object({ result: z.string() }),
+  execute: async ({ context }) => {
+    // Access user's configuration
+    const apiKey = env.state.openaiApiKey;
+    const rateLimit = env.state.maxRequestsPerMinute;
+    const advancedEnabled = env.state.enableAdvancedFeatures;
+    
+    // Use configuration in your logic
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      headers: {
+        "Authorization": `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: advancedEnabled ? "gpt-4" : "gpt-3.5-turbo",
+        messages: [{ role: "user", content: context.message }],
+      }),
+    });
+    
+    return { result: await response.text() };
+  },
+});
+```
+
+## Configuration Best Practices
+
+**Required vs Optional Fields:**
+- Use `.describe()` to provide clear descriptions for users
+- Mark truly required fields without `.optional()`
+- Provide sensible `.default()` values for optional settings
+
+**Security Considerations:**
+- API keys and passwords are automatically encrypted by Deco
+- Sensitive fields won't be exposed in logs or client-side code
+- Use descriptive names that indicate the purpose
+
+**User Experience:**
+- Group related settings in objects (like `emailConfig` above)
+- Use clear, non-technical descriptions
+- Provide examples in descriptions when helpful
+
+## When to Use This Pattern
+
+**✅ Use StateSchema extension when your app needs:**
+- API keys for third-party services
+- Global configuration that affects app behavior
+- Per-installation customization options
+- Feature toggles or settings
+- Database connection strings or service URLs
+
+**❌ Don't use for:**
+- User-specific data (use database instead)
+- Temporary or session data
+- Data that changes frequently during app usage
+- Internal app state or caching
+
+## After Making Changes
+
+After extending StateSchema, regenerate types:
+```bash
+npm run gen        # Regenerate integration types
+npm run gen:self   # Regenerate your own tool types
+```
+
