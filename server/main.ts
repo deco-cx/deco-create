@@ -13,7 +13,6 @@ import {
 
 import { tools } from "./tools/index.ts";
 import { views } from "./views.ts";
-import { workflows } from "./workflows/index.ts";
 
 /**
  * This Env type is the main context object that is passed to
@@ -62,15 +61,13 @@ const runtime = withRuntime<Env, typeof StateSchema>({
     state: StateSchema,
   },
   views,
-  workflows,
   tools,
   /**
-   * Fallback directly to assets for all requests that do not match a tool, workflow or auth.
-   * If you wanted to add custom api routes that dont make sense to be a tool or workflow,
+   * Fallback directly to assets for all requests that do not match a tool or auth.
+   * If you wanted to add custom api routes that dont make sense to be a tool,
    * you can add them on this handler.
    */
   fetch: (req, env) => env.ASSETS.fetch(req),
 });
 
-export const Workflow = runtime.Workflow;
 export default runtime;

@@ -13,7 +13,7 @@ This is a **Deco MCP (Model Context Protocol) server** template with a **React +
 
 ## Goal
 
-The goal of this template is to help users generate their apps with data schemas, workflows, tools, using AI and third-party API via our RPC framework (check deco.gen.ts).
+The goal of this template is to help users generate their apps with data schemas and tools, using AI and third-party API via our RPC framework (check deco.gen.ts).
 
 After this template is initiated, the user will give you prompt to create a new application.
 
@@ -32,9 +32,6 @@ react-tailwind-view/
 │   │   ├── todos.ts     # Todo-related tools
 │   │   ├── user.ts      # User-related tools
 │   │   └── [domain].ts  # Additional domain-specific tools
-│   ├── workflows/       # Domain-organized workflows (max 300 lines per file)
-│   │   ├── index.ts     # Central export point for all workflows
-│   │   └── [domain].ts  # Domain-specific workflows
 │   ├── wrangler.toml    # Cloudflare Workers config
 │   └── package.json     # Server dependencies
 └── view/                # React Frontend (Vite + Tailwind)
@@ -63,13 +60,13 @@ react-tailwind-view/
   - Run this after adding new integrations in deco.chat
 
 - `npm run gen:self` - **Self-type generation for your own tools**
-  - Generates TypeScript types for your own server's tools and workflows
+  - Generates TypeScript types for your own server's tools
   - Requires the server to be running (`npm run dev`)
   - Copy the development URL from server logs (e.g., "https://localhost-48d64e92.deco.host")
   - Add /mcp to the path. So, for the URL https://localhost-48d64e92.deco.host you should set DECO_SELF_URL as https://localhost-48d64e92.deco.host/mcp.
   - Run: `DECO_SELF_URL=<your-dev-url> npm run gen:self`
-  - Creates typed RPC interfaces for your own tools/workflows
-  - Run this after adding new tools or workflows to your server
+  - Creates typed RPC interfaces for your own tools
+  - Run this after adding new tools to your server
 
 - `npm run deploy` - **Production deployment**
   - Builds frontend for production
@@ -79,7 +76,7 @@ react-tailwind-view/
 ### Server Architecture (`/server`)
 
 **Key Files:**
-- `main.ts` - Main server with tools, workflows, and asset serving
+- `main.ts` - Main server with tools and asset serving
 - `deco.gen.ts` - Generated types for integrations (auto-generated)
 - `wrangler.toml` - Cloudflare Workers config with asset binding
 
@@ -101,24 +98,12 @@ const createMyTool = (env: Env) => createPrivateTool({
   },
 });
 
-// 2. Define workflows (multi-step processes)
-const createMyWorkflow = (env: Env) => {
-  const step = createStepFromTool(createMyTool(env));
-  return createWorkflow({
-    id: "MY_WORKFLOW",
-    inputSchema: z.object({ /* input */ }),
-    outputSchema: z.object({ /* output */ }),
-  }).then(step).commit();
-};
-
-// 3. Setup runtime with fallback to serve frontend
-const { Workflow, ...runtime } = withRuntime<Env>({
-  workflows: [createMyWorkflow],
+// 2. Setup runtime with fallback to serve frontend
+const runtime = withRuntime<Env>({
   tools: [createMyTool],
   fetch: fallbackToView("/"), // Serves frontend assets
 });
 
-export { Workflow };
 export default runtime;
 ```
 
@@ -184,18 +169,10 @@ export const useMyToolMutation = () => {
   });
 };
 
-// For workflows - typically use useMutation
-export const useStartMyWorkflow = () => {
-  return useMutation({
-    mutationFn: (input: { name: string }) => client.START_MY_WORKFLOW(input),
-  });
-};
-
 // Usage in components:
 function MyComponent() {
   const { data, isLoading, error } = useMyTool({ name: "example" });
   const myToolMutation = useMyToolMutation();
-  const startWorkflow = useStartMyWorkflow();
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -208,12 +185,6 @@ function MyComponent() {
         disabled={myToolMutation.isPending}
       >
         {myToolMutation.isPending ? "Running..." : "Run Tool"}
-      </button>
-      <button 
-        onClick={() => startWorkflow.mutate({ name: "workflow-input" })}
-        disabled={startWorkflow.isPending}
-      >
-        Start Workflow
       </button>
     </div>
   );
@@ -335,14 +306,6 @@ function NavigationExamples() {
 8. Create TanStack Query hooks in `view/src/hooks/` to wrap RPC calls
 9. Use the hooks in components instead of calling `client.YOUR_TOOL()` directly
 
-### When Adding New Workflows:
-1. Create workflow in `server/main.ts`
-2. Include in `withRuntime` workflows array
-3. Run `npm run gen` to update external integration types
-4. Start server with `npm run dev` and copy the development URL from logs
-5. Run `DECO_SELF_URL=<your-dev-url> npm run gen:self` to generate self-types
-6. Create TanStack Query mutation hooks in `view/src/hooks/` to wrap workflow calls
-7. Use the hooks in components instead of calling `client.START_YOUR_WORKFLOW()` directly
 
 ### When Adding New Routes:
 1. Create route component in `view/src/routes/`
@@ -551,7 +514,7 @@ Due to OAuth callback URL requirements, you must deploy your application once be
 1. Go to deco.chat dashboard
 2. Add integrations (APIs, databases, etc.)
 3. Run `npm run gen` to get typed interfaces
-4. Use typed clients in your tools/workflows
+4. Use typed clients in your tools
 
 ### Deployment:
 - `npm run deploy` deploys to Cloudflare Workers
@@ -838,9 +801,9 @@ execute: async ({ context }) => {
 ### Frontend State Management:
 - Use `@tanstack/react-query` for server state management
 - Prefer wrapping RPC client calls in TanStack Query hooks over direct calls in components
-- Create custom hooks in `view/src/hooks/` for each tool/workflow:
+- Create custom hooks in `view/src/hooks/` for each tool:
   - Use `useQuery` for read operations (data fetching)
-  - Use `useMutation` for write operations (tools/workflows that modify state)
+  - Use `useMutation` for write operations (tools that modify state)
 - Use TanStack Router for typesafe navigation and routing state
 - Use React hooks for component-local state
 
@@ -892,21 +855,6 @@ export const useUpdateData = () => {
   });
 };
 
-// 3. Long-running workflow with status polling
-export const useWorkflowWithPolling = () => {
-  return useMutation({
-    mutationFn: (input: { name: string }) => 
-      client.START_LONG_WORKFLOW(input),
-    
-    onSuccess: (data) => {
-      // Start polling for workflow status
-      if (data.workflowId) {
-        // You can trigger a separate useQuery to poll status
-        // or use queryClient.refetchQueries to update related data
-      }
-    },
-  });
-};
 
 // 4. Dependent queries - only run when previous data is available
 export const useUserProfile = (userId: string) => {
@@ -946,7 +894,6 @@ export const useInfiniteData = (filters: any) => {
 function DataComponent({ id }: { id: string }) {
   const { data, isLoading, error } = useGetData(id);
   const updateMutation = useUpdateData();
-  const workflowMutation = useWorkflowWithPolling();
 
   if (isLoading) return <div>Loading...</div>;
   if (error) return <div>Error: {error.message}</div>;
@@ -959,13 +906,6 @@ function DataComponent({ id }: { id: string }) {
         disabled={updateMutation.isPending}
       >
         {updateMutation.isPending ? "Updating..." : "Update"}
-      </button>
-      
-      <button 
-        onClick={() => workflowMutation.mutate({ name: "process" })}
-        disabled={workflowMutation.isPending}
-      >
-        {workflowMutation.isPending ? "Processing..." : "Start Process"}
       </button>
     </div>
   );
@@ -982,4 +922,4 @@ function DataComponent({ id }: { id: string }) {
 - Server logs appear in terminal during `npm run dev`
 - Use browser dev tools for frontend debugging
 
-This template provides a complete full-stack development environment for building MCP servers with modern React frontends. Focus on adding your business logic in tools and workflows while leveraging the typed RPC communication between frontend and backend.
+This template provides a complete full-stack development environment for building MCP servers with modern React frontends. Focus on adding your business logic in tools while leveraging the typed RPC communication between frontend and backend.
