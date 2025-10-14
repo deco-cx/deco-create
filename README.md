@@ -172,6 +172,10 @@ Build powerful AI applications like:
 - **💬 Community**: [Join our Discord](https://discord.gg/deco)
 - **🐙 Source Code**: [deco-cx/deco](https://github.com/deco-cx/deco)
 
+## 💡 Development Tip
+
+Consider using [SpecStory](https://specstory.com/) in your AI editor to track your development history and prompts as you build your AI application. It's a great way to document your development process and share knowledge with your team.
+
 ---
 
 **Ready to build the next generation of AI applications?**

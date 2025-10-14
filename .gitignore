@@ -21,3 +21,6 @@ count.txt
 .env
 .nitro
 .tanstack
+
+# SpecStory development history
+.specstory/
