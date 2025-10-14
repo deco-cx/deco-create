@@ -25,12 +25,3 @@ integration_name = "@deco/ai-gateway"
 name = "DATABASE"
 type = "mcp"
 integration_name = "@deco/database"
-
-[[migrations]]
-tag = "v1"
-new_classes = [ "Workflow" ]
-
-[durable_objects]
-[[durable_objects.bindings]]
-name = "DECO_WORKFLOW_DO"
-class_name = "Workflow"
