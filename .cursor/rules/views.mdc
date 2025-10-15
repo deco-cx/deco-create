@@ -1,0 +1,319 @@
+---
+alwaysApply: true
+---
+
+# Adding Views to Your Deco App
+
+## What are Views?
+
+Views are pages from your app that become available in the user's deco project when they install your MCP server. They appear in the deco workspace UI and can be accessed directly by users.
+
+## When to Use Views
+
+Use views when you want to:
+- **Provide UI interfaces** that users can access from their deco workspace
+- **Create dashboards** or control panels for your app functionality
+- **Build interactive tools** that users can use directly
+- **Expose admin panels** or configuration interfaces
+
+## How Views Work
+
+Views are defined in `server/views.ts` and point to URLs that are publicly accessible. When users install your app, these views become available in their deco project navigation.
+
+## Adding a New View
+
+### 1. Deploy Your App First
+
+Views require absolute URLs, so you must deploy your app to get a public URL:
+
+```bash
+npm run deploy
+```
+
+Your app will be available at: `https://your-app-name.deco.page`
+
+### 2. Create the View Route
+
+Add a new route in your React app (`view/src/routes/`):
+
+```typescript
+// view/src/routes/my-dashboard.tsx
+import { createRoute, type RootRoute } from "@tanstack/react-router";
+
+function MyDashboardComponent() {
+  return (
+    <div className="p-8">
+      <h1 className="text-2xl font-bold">My Dashboard</h1>
+      {/* Your dashboard UI */}
+    </div>
+  );
+}
+
+export default (parentRoute: RootRoute) =>
+  createRoute({
+    path: "/my-dashboard",
+    component: MyDashboardComponent,
+    getParentRoute: () => parentRoute,
+  });
+```
+
+### 3. Register the Route
+
+Add the route to your router in `view/src/main.tsx`:
+
+```typescript
+import MyDashboard from "./routes/my-dashboard.tsx";
+
+const routeTree = rootRoute.addChildren([
+  indexRoute,
+  MyDashboard(rootRoute),
+  // ... other routes
+]);
+```
+
+### 4. Add the View Definition
+
+Update `server/views.ts`:
+
+```typescript
+export const views: CreateMCPServerOptions<Env, typeof StateSchema>["views"] =
+  () => [
+    {
+      title: "My Dashboard",
+      icon: "dashboard", // Material Icons: https://fonts.google.com/icons?selected=Material+Icons
+      url: "https://your-app-name.deco.page/my-dashboard",
+    },
+    {
+      title: "Settings",
+      icon: "settings",
+      url: "https://your-app-name.deco.page/settings",
+    },
+  ];
+```
+
+### 5. Deploy and Test
+
+```bash
+npm run deploy
+```
+
+After deployment, users who install your app will see these views in their deco workspace.
+
+## View Configuration Options
+
+```typescript
+{
+  title: string;        // Display name in the deco workspace
+  icon: string;         // Material Icon name (https://fonts.google.com/icons)
+  url: string;          // Absolute URL to the view (must be public)
+}
+```
+
+## Popular Material Icons for Views
+
+- `dashboard` - For dashboard/overview pages
+- `settings` - For configuration pages
+- `analytics` - For analytics/reports
+- `table_chart` - For data tables
+- `assessment` - For reports/metrics
+- `extension` - For plugins/integrations
+- `admin_panel_settings` - For admin interfaces
+- `view_list` - For list views
+- `account_circle` - For user profiles
+- `help` - For help/documentation
+
+Full list: [Google Material Icons](https://fonts.google.com/icons?selected=Material+Icons)
+
+## View Best Practices
+
+### 1. Authentication-Aware Views
+
+Views should check if the user is authenticated:
+
+```typescript
+import { useUser } from "../lib/hooks";
+
+function MyDashboardComponent() {
+  const { user, isLoading } = useUser();
+  
+  if (isLoading) return <div>Loading...</div>;
+  if (!user) return <div>Please login to access this dashboard</div>;
+  
+  return (
+    <div>
+      <h1>Welcome, {user.name}</h1>
+      {/* Dashboard content */}
+    </div>
+  );
+}
+```
+
+### 2. Responsive Design
+
+Views should work on different screen sizes:
+
+```typescript
+function MyDashboardComponent() {
+  return (
+    <div className="container mx-auto p-4 md:p-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {/* Responsive grid layout */}
+      </div>
+    </div>
+  );
+}
+```
+
+### 3. Loading States
+
+Provide feedback while data is loading:
+
+```typescript
+function MyDashboardComponent() {
+  const { data, isLoading } = useMyData();
+  
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900" />
+      </div>
+    );
+  }
+  
+  return <div>{/* Render data */}</div>;
+}
+```
+
+### 4. Error Handling
+
+Handle errors gracefully:
+
+```typescript
+function MyDashboardComponent() {
+  const { data, error } = useMyData();
+  
+  if (error) {
+    return (
+      <div className="p-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h2 className="text-red-800 font-semibold">Error</h2>
+          <p className="text-red-600">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return <div>{/* Render data */}</div>;
+}
+```
+
+## Example: Complete View Implementation
+
+```typescript
+// view/src/routes/analytics.tsx
+import { createRoute, type RootRoute } from "@tanstack/react-router";
+import { useUser } from "../lib/hooks";
+import { useAnalyticsData } from "../hooks/useAnalytics";
+
+function AnalyticsComponent() {
+  const { user, isLoading: userLoading } = useUser();
+  const { data, isLoading: dataLoading, error } = useAnalyticsData();
+  
+  if (userLoading || dataLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary" />
+      </div>
+    );
+  }
+  
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <h2 className="text-2xl font-bold mb-4">Authentication Required</h2>
+          <p className="text-gray-600">Please login to view analytics</p>
+        </div>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="p-8">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h2 className="text-red-800 font-semibold">Error Loading Analytics</h2>
+          <p className="text-red-600">{error.message}</p>
+        </div>
+      </div>
+    );
+  }
+  
+  return (
+    <div className="container mx-auto p-4 md:p-8">
+      <h1 className="text-3xl font-bold mb-6">Analytics Dashboard</h1>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        {/* Metric cards */}
+        <div className="bg-white rounded-lg shadow p-6">
+          <h3 className="text-gray-500 text-sm">Total Users</h3>
+          <p className="text-3xl font-bold">{data.totalUsers}</p>
+        </div>
+        {/* More metric cards */}
+      </div>
+      
+      <div className="bg-white rounded-lg shadow p-6">
+        {/* Charts and detailed analytics */}
+      </div>
+    </div>
+  );
+}
+
+export default (parentRoute: RootRoute) =>
+  createRoute({
+    path: "/analytics",
+    component: AnalyticsComponent,
+    getParentRoute: () => parentRoute,
+  });
+```
+
+```typescript
+// server/views.ts
+export const views: CreateMCPServerOptions<Env, typeof StateSchema>["views"] =
+  () => [
+    {
+      title: "Analytics",
+      icon: "analytics",
+      url: "https://my-app.deco.page/analytics",
+    },
+  ];
+```
+
+## Important Notes
+
+1. **Public URLs Required**: Views must use public, deployed URLs. Local development URLs won't work for installed users.
+
+2. **Deploy Before Adding Views**: Always deploy your app before adding view definitions so the URLs are accessible.
+
+3. **Consistent Routing**: The URL path in `views.ts` must match the route path in your React router.
+
+4. **Authentication**: Views inherit the authentication state from the deco workspace. Users are automatically authenticated when accessing views from the workspace.
+
+5. **Updates**: When you update view URLs or add new views, users need to reinstall or update your app in their workspace.
+
+## Testing Views
+
+1. **Deploy your app**: `npm run deploy`
+2. **Install your app** in a test workspace at [admin.decocms.com](https://admin.decocms.com/)
+3. **Check the workspace navigation** to see if your views appear
+4. **Click on each view** to verify they load correctly
+
+## Summary
+
+Views are a powerful way to provide rich UI experiences directly within the deco workspace. Follow these steps:
+
+1. ✅ Create React routes for your views
+2. ✅ Deploy your app to get public URLs
+3. ✅ Add view definitions in `server/views.ts`
+4. ✅ Test by installing your app in a workspace
+5. ✅ Iterate and improve based on user feedback

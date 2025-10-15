@@ -3,10 +3,13 @@
  *
  * Declaring views here will make them available on the user's
  * project when they install your MCP server.
+ * 
+ * Since we need absolute URLs for now, the app must be deployed to have
+ * a app-name.deco.page url to be used here.
  *
  * @see https://docs.deco.page/en/guides/building-views/
  */
-import { StateSchema } from "./deco.gen";
+import { StateSchema } from "../shared/deco.gen.ts";
 import { Env } from "./main.ts";
 import type { CreateMCPServerOptions } from "@deco/workers-runtime/mastra";
 
