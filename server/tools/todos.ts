@@ -123,6 +123,7 @@ export const createToggleTodoTool = (env: Env) =>
 
       // First get the current todo
       const currentTodo = await db.select().from(todosTable).where(
+        // @ts-ignore
         eq(todosTable.id, context.id),
       ).limit(1);
 
@@ -135,6 +136,7 @@ export const createToggleTodoTool = (env: Env) =>
 
       const updatedTodo = await db.update(todosTable)
         .set({ completed: newCompletedStatus })
+        // @ts-ignore
         .where(eq(todosTable.id, context.id))
         .returning();
 
@@ -164,6 +166,7 @@ export const createDeleteTodoTool = (env: Env) =>
 
       // First check if the todo exists
       const existingTodo = await db.select().from(todosTable).where(
+        // @ts-ignore
         eq(todosTable.id, context.id),
       ).limit(1);
 
@@ -172,6 +175,7 @@ export const createDeleteTodoTool = (env: Env) =>
       }
 
       // Delete the todo
+      // @ts-ignore
       await db.delete(todosTable).where(eq(todosTable.id, context.id));
 
       return {

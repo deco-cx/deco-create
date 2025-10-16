@@ -34,7 +34,7 @@ const runtime = withRuntime<Env, typeof StateSchema>({
      * and utilize the user's own AI Gateway, without having to
      * deploy your own, setup any API keys, etc.
      */
-    scopes: [Scopes.AI_GATEWAY.AI_GENERATE, Scopes.AI_GATEWAY.AI_GENERATE_OBJECT, Scopes.DATABASE.DATABASES_RUN_SQL],
+    scopes: [Scopes.AI_GATEWAY.AI_GENERATE, Scopes.AI_GATEWAY.AI_GENERATE_OBJECT, Scopes.DATABASE.DATABASES_RUN_SQL, ...Object.values(Scopes.DECONFIG)],
     /**
      * The state schema of your Application defines what
      * your installed App state will look like. When a user
@@ -61,7 +61,11 @@ const runtime = withRuntime<Env, typeof StateSchema>({
    * If you wanted to add custom api routes that dont make sense to be a tool or workflow,
    * you can add them on this handler.
    */
-  fetch: (req, env) => env.ASSETS.fetch(req),
+  fetch: async (req, env) => {
+    const url = new URL(req.url);
+
+    return await env.ASSETS.fetch(req);
+  },
 });
 
 export const Workflow = runtime.Workflow;

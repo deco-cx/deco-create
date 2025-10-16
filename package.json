@@ -7,13 +7,14 @@
   "scripts": {
     "dev": "deco dev --vite",
     "configure": "deco configure",
-    "gen": "deco gen --output=shared/deco.gen.ts",
-    "deploy": "npm run build && deco deploy ./dist/server",
+    "gen": "../chat/packages/cli/dist/cli.js gen --output=shared/deco.gen.ts -l",
+    "gen:self": "deco gen --output=shared/deco.gen.ts --self=$DECO_SELF_URL",
+    "deploy": "npm run build && ../chat/packages/cli/dist/cli.js deploy ./dist/server -l",
     "build": "vite build",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {
-    "@deco/workers-runtime": "npm:@jsr/deco__workers-runtime@0.20.2",
+    "@deco/workers-runtime": "file://../chat/packages/runtime",
     "@radix-ui/react-collapsible": "^1.1.12",
     "@radix-ui/react-popover": "^1.1.15",
     "@radix-ui/react-slot": "^1.2.3",
@@ -36,7 +37,7 @@
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.13.4",
     "concurrently": "^9.2.0",
-    "deco-cli": "^0.21.3",
+    "deco-cli": "^0.22.0",
     "drizzle-kit": "^0.31.4",
     "typescript": "^5.7.2",
     "@types/react": "^19.0.8",

@@ -1,9 +1,9 @@
 #:schema node_modules/@deco/workers-runtime/config-schema.json
-name = "deco-create"
+name = "deco-create-candy2"
 main = "server/main.ts"
 compatibility_date = "2025-06-17"
-compatibility_flags = ["nodejs_compat"]
-scope = "kmute"
+compatibility_flags = [ "nodejs_compat" ]
+scope = "candy-scope"
 
 [assets]
 directory = "./dist/client"
@@ -12,9 +12,9 @@ not_found_handling = "single-page-application"
 run_worker_first = true
 
 [deco]
-workspace = "kmute"
+workspace = "/candy-testing/default"
 enable_workflows = true
-local = false
+local = true
 
 [[deco.bindings]]
 name = "AI_GATEWAY"
@@ -26,9 +26,14 @@ name = "DATABASE"
 type = "mcp"
 integration_name = "@deco/database"
 
+[[deco.bindings]]
+name = "DECONFIG"
+type = "mcp"
+integration_name = "@deco/deconfig"
+
 [[migrations]]
 tag = "v1"
-new_classes = ["Workflow"]
+new_classes = [ "Workflow" ]
 
 [durable_objects]
 [[durable_objects.bindings]]
