@@ -55,7 +55,9 @@ We're finishing our **visual workflow editor** where you'll be able to:
 
 ## 🚀 Quick Start
 
-### Create Your AI App
+### Two Ways to Create Your AI App
+
+#### Option 1: Using npm create (Recommended)
 
 ```bash
 # Create a new AI app from this template
@@ -64,7 +66,29 @@ npm create deco@latest my-ai-app
 # Navigate to your project
 cd my-ai-app
 
-# Configure your app
+# Configure your app (sets name, scope, and workspace)
+npm run configure
+
+# Start development server
+npm run dev
+```
+
+#### Option 2: Using GitHub Template
+
+You can also create a new app by using this repository as a GitHub template:
+
+1. Click "Use this template" on GitHub to create a new repository
+2. Clone your new repository
+3. Install dependencies and configure:
+
+```bash
+git clone <your-new-repo-url>
+cd <your-new-repo>
+
+# Install dependencies
+npm install
+
+# Configure your app (REQUIRED - sets name, scope, and workspace)
 npm run configure
 
 # Start development server
@@ -75,19 +99,43 @@ The server will start on `http://localhost:8787` serving both your MCP endpoints
 
 ### Prerequisites
 
-- Node.js ≥22.0.0
-- [Deco CLI](https://docs.deco.page) installed for authentication
-- A [deco](https://admin.decocms.com/) account for API integrations
+- **Node.js ≥22.0.0**
+- **Deco CLI** - Required for development and deployment:
+  ```bash
+  npm install -g deco-cli
+  ```
+- **Deco Account** - Sign up at [admin.decocms.com](https://admin.decocms.com/)
 
 ### ⚠️ Important Setup Note
 
-To properly use this template, you need to:
+After creating your app (via npm create or GitHub template), you must:
 
-1. **Deploy first**: Run `npm run deploy` or `bun run deploy` to create your app
-2. **Install Deco CLI**: Follow instructions at [docs.deco.page](https://docs.deco.page)
-3. **Login**: Use `deco login` to authenticate with your account
+1. **Install Deco CLI globally**: 
+   ```bash
+   npm install -g deco-cli
+   ```
 
-This is required for OAuth authentication and integration management to work properly.
+2. **Login to Deco**:
+   ```bash
+   deco login
+   ```
+
+3. **Configure your app** (REQUIRED before first use):
+   ```bash
+   npm run configure
+   ```
+   
+   This configures:
+   - **App name**: Determines your deployment URL (`<app-name>.deco.page`)
+   - **Scope**: Maps to your deco organization/project
+   - **Workspace**: Maps to your deco organization/project
+
+4. **Deploy** to enable OAuth authentication:
+   ```bash
+   npm run deploy
+   ```
+
+**Note**: The template comes with default values (`name = "deco-create"`, `scope = "kmute"`). You must run `npm run configure` to set your own values before development or deployment.
 
 ## 📁 Project Structure
 
