@@ -13,7 +13,7 @@ run_worker_first = true
 
 [deco]
 workspace = "kmute"
-enable_workflows = true
+enable_workflows = false
 local = false
 
 [[deco.bindings]]
